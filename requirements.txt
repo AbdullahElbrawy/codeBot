@@ -4,3 +4,4 @@ python-dotenv==0.19.1
 pyTelegramBotAPI==4.1.1
 requests==2.26.0
 werkzeug==2.2.2
+dnspython==2.1.0
