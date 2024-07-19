@@ -86,6 +86,23 @@ def start(message):
         bot.send_message(chat_id, 'Failed to retrieve chat information. Please try again later.')
         print(f"Failed to retrieve chat information: {e}")
 
+@bot.message_handler(content_types=['new_chat_members'])
+def new_member(message):
+    for new_user in message.new_chat_members:
+        chat_id = message.chat.id
+        user_id = new_user.id
+        username = new_user.username or 'unknown user'
+        join_date = datetime.now()
+
+        user = users_collection.find_one({'chat_id': chat_id, 'user_id': user_id})
+        if not user:
+            users_collection.update_one(
+                {'chat_id': chat_id, 'user_id': user_id},
+                {'$set': {'username': username, 'chat_id': chat_id, 'user_id': user_id, 'join_date': join_date}},
+                upsert=True
+            )
+        bot.send_message(chat_id, f"Welcome {username} to the channel! Joined on {join_date.strftime('%Y-%m-%d %H:%M:%S')}")
+
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     chat_id = call.message.chat.id
